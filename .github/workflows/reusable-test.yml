@@ -7,6 +7,10 @@ name: Reusable Test Workflow
 
 on:
   workflow_call:
+    outputs:
+      should_skip:
+        description: 'Whether duplicate detection skipped the test job.'
+        value: ${{ jobs.run_test.outputs.should_skip }}
     inputs:
       name:
         required: true
@@ -68,6 +72,8 @@ permissions:
 
 jobs:
   run_test:
+    outputs:
+      should_skip: ${{ steps.skip_check.outputs.should_skip }}
     # Due to app-verifier, unit tests take a lot longer to execute. Also, stress tests now take around 90 minutes.
     # Increase the timeout to 150 minutes.
     timeout-minutes: 150
@@ -96,7 +102,7 @@ jobs:
 
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@46b06cea07f9e64621fdf066ba77ac6915163d43  # v2.22.3
+        uses: step-security/harden-runner@aebdcf6156ab6691adf63218240e476564a1ed4c  # v2.23.0
         with:
           egress-policy: audit
 
@@ -535,7 +541,7 @@ jobs:
       issue_node_id: ${{ steps.create_or_update_issue.outputs.issue_node_id }}
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@46b06cea07f9e64621fdf066ba77ac6915163d43  # v2.22.3
+        uses: step-security/harden-runner@aebdcf6156ab6691adf63218240e476564a1ed4c  # v2.23.0
         with:
           disable-sudo: true
           egress-policy: block
